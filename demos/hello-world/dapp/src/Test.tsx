@@ -1,14 +1,20 @@
-import React, { useEffect } from "react";
-import logo from "./logo.svg";
-import "./App.css";
+import React, { useEffect } from 'react';
+import logo from './logo.svg';
+import './App.css';
 
-import { useWeb3ApiQuery, createWeb3ApiRoot } from "@web3api/react";
-import { Uri, UriRedirect } from "@web3api/client-js";
-import { EnsPlugin } from "@web3api/ens-plugin-js";
-import { EthereumPlugin } from "@web3api/ethereum-plugin-js";
-import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
+import {
+  useWeb3ApiQuery,
+  createWeb3ApiProvider,
+  Web3ApiProvider,
+} from '@web3api/react';
+import { Uri, UriRedirect } from '@web3api/client-js';
+import { EnsPlugin } from '@web3api/ens-plugin-js';
+import { EthereumPlugin } from '@web3api/ethereum-plugin-js';
+import { IpfsPlugin } from '@web3api/ipfs-plugin-js';
 
-const SimpleStorageProvider = createWeb3ApiRoot("simpleStorage");
+// const SimpleStorageProvider = createWeb3ApiProvider('simpleStorage');
+// const SimpleStorageProvider = Web3ApiProvider;
+// console.log('SSP >>>', SimpleStorageProvider);
 // const OneInchProvider = createWeb3ApiRoot("ta");
 
 const ActionComponent = () => {
@@ -27,14 +33,14 @@ const ActionComponent = () => {
     loading: loadingDeploy,
     errors: deployContractErrors,
   } = useWeb3ApiQuery({
-    key: "simpleStorage",
-    uri: new Uri("ens/api.simplestorage.eth"),
+    provider: 'simpleStorage',
+    uri: 'ens/api.simplestorage.eth',
     query: `mutation { deployContract }`,
   });
 
   const { execute: setData, loading: loadingSetData } = useWeb3ApiQuery({
-    key: "simpleStorage",
-    uri: new Uri("ens/api.simplestorage.eth"),
+    provider: 'simpleStorage',
+    uri: 'ens/api.simplestorage.eth',
     query: `mutation {
       setData(options: {
         address: "${deployData?.deployContract}"
@@ -44,8 +50,8 @@ const ActionComponent = () => {
   });
 
   const { execute: getStorageData } = useWeb3ApiQuery({
-    key: "simpleStorage",
-    uri: new Uri("ens/api.simplestorage.eth"),
+    provider: 'simpleStorage',
+    uri: 'ens/api.simplestorage.eth',
     query: `query {
       getData(
         address: "${deployData?.deployContract}"
@@ -81,8 +87,8 @@ const ActionComponent = () => {
           )}
           {deployContractErrors && (
             <div>
-              There's an error:{" "}
-              {deployContractErrors.map((e) => e.message).join(", ")}
+              There's an error:{' '}
+              {deployContractErrors.map((e) => e.message).join(', ')}
             </div>
           )}
         </>
@@ -96,21 +102,21 @@ function Test() {
 
   const redirects: UriRedirect[] = [
     {
-      from: new Uri("w3://ens/ethereum.web3api.eth"),
+      from: 'w3://ens/ethereum.web3api.eth',
       to: {
         factory: () => new EthereumPlugin({ provider: ethereum }),
         manifest: EthereumPlugin.manifest(),
       },
     },
     {
-      from: new Uri("w3://ens/ipfs.web3api.eth"),
+      from: 'w3://ens/ipfs.web3api.eth',
       to: {
-        factory: () => new IpfsPlugin({ provider: "https://ipfs.io" }),
+        factory: () => new IpfsPlugin({ provider: 'https://ipfs.io' }),
         manifest: IpfsPlugin.manifest(),
       },
     },
     {
-      from: new Uri("w3://ens/ens.web3api.eth"),
+      from: 'w3://ens/ens.web3api.eth',
       to: {
         factory: () => new EnsPlugin({}),
         manifest: EnsPlugin.manifest(),
@@ -119,7 +125,7 @@ function Test() {
   ];
 
   return (
-    <SimpleStorageProvider redirects={redirects}>
+    <Web3ApiProvider redirects={redirects}>
       {/* <OneInchProvider redirects={redirects}> */}
       <div className="App">
         <header className="App-header">
@@ -128,7 +134,7 @@ function Test() {
         </header>
       </div>
       {/* </OneInchProvider> */}
-    </SimpleStorageProvider>
+    </Web3ApiProvider>
   );
 }
 
