@@ -1,3 +1,5 @@
+import { Tracer } from "@web3api/tracing";
+
 import { Uri, UriRedirect } from "../types";
 
 export function getImplementations(
@@ -5,6 +7,10 @@ export function getImplementations(
   redirects: readonly UriRedirect<Uri>[]
 ): Uri[] {
   const result: Uri[] = [];
+
+  Tracer.startSpan("core: getImplementations");
+  Tracer.setAttribute("abstractApi", abstractApi);
+  Tracer.setAttribute("redirects", redirects);
 
   for (const redirect of redirects) {
     // Plugin implemented check
@@ -24,6 +30,9 @@ export function getImplementations(
       }
     }
   }
+
+  Tracer.addEvent("get implementations finished", result);
+  Tracer.endSpan();
 
   return result;
 }
